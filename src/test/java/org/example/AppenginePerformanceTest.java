@@ -32,12 +32,13 @@ import static org.awaitility.Awaitility.await;
 public class AppenginePerformanceTest implements Serializable
 {
     private static final String OUTPUT_DIR = "target/reports";
+    private static final int MAX_SIZE = 32 * 1024 * 1024;
 
     public static Stream<Arguments> arguments()
     {
         return Stream.of(
-            Arguments.of(3000, 5, 1024, Duration.ofSeconds(60), true, "newMode-"),
-            Arguments.of(3000, 5, 1024, Duration.ofSeconds(60), false, "oldMode-")
+            Arguments.of(3000, 1024, 1024, Duration.ofSeconds(20), true, "newMode-"),
+            Arguments.of(3000, 1024, 1024, Duration.ofSeconds(20), false, "oldMode-")
         );
     }
 

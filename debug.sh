@@ -16,11 +16,10 @@ APP_LOCATION=/home/lachlan/webtide/appengine-performance-testing/target/appengin
 RUNTIME_DEPLOYMENT="/tmp/runtime-deployment"
 mkdir -p $RUNTIME_DEPLOYMENT
 rm -rf ${RUNTIME_DEPLOYMENT:?}/*
-cp /home/lachlan/webtide/appengine-performance-testing/src/main/runtime-deployment/runtime-* $RUNTIME_DEPLOYMENT
+cp /home/lachlan/webtide/appengine-performance-testing/src/test/resources/runtime-deployment/runtime-* $RUNTIME_DEPLOYMENT
 
 # To start API Server you run this from root of appengine-java-standard repository.
 # mvn exec:java -pl :appengine-apis-dev -Dexec.mainClass="com.google.appengine.tools.development.HttpApiServer"
-
 "$JAVA_HOME"/bin/java \
  --add-opens java.base/java.lang=ALL-UNNAMED \
  --add-opens java.base/java.nio.charset=ALL-UNNAMED \

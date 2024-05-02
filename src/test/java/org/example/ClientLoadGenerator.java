@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,7 +19,7 @@ import org.mortbay.jetty.load.generator.listeners.ReportListener;
 
 public class ClientLoadGenerator
 {
-    private static final String OUTPUT_FILE = "client-output.txt";
+    public static final String OUTPUT_FILE = "client-output.txt";
 
     public static void generateLoad(Duration duration, int resourceRate, String host, int port, int numWrites, int bufferSize, String logPrefix) throws Exception
     {
@@ -34,6 +35,7 @@ public class ClientLoadGenerator
             .host(host)
             .port(port)
             .resource(resource)
+            .idleTimeout(120000)
             .resourceRate(resourceRate)
             .warmupIterationsPerThread(10)
             .runFor(duration.toMillis(), TimeUnit.MILLISECONDS)
@@ -78,14 +80,14 @@ public class ClientLoadGenerator
         out.append("5xx: ").append(report.getResponses5xx()).append("\n");
 
         Histogram histogram = report.getResponseTimeHistogram();
-        out.append("histogram min: ").append(toMicros(histogram.getMinValue())).append("\n");
-        out.append("histogram mean: ").append(toMicros(histogram.getMean())).append("\n");
-        out.append("histogram max: ").append(toMicros(histogram.getMaxValue())).append("\n");
-        out.append("histogram 50: ").append(toMicros(histogram.getValueAtPercentile(50))).append("\n");
+        out.append("histogram min: ").append(toMillis(histogram.getMinValue())).append("\n");
+        out.append("histogram mean: ").append(toMillis(histogram.getMean())).append("\n");
+        out.append("histogram max: ").append(toMillis(histogram.getMaxValue())).append("\n");
+        out.append("histogram 50: ").append(toMillis(histogram.getValueAtPercentile(50))).append("\n");
 
         for (int i = 95; i < 100; i++)
         {
-            out.append("histogram ").append(i).append(": ").append(toMicros(histogram.getValueAtPercentile(i))).append("\n");
+            out.append("histogram ").append(i).append(": ").append(toMillis(histogram.getValueAtPercentile(i))).append("\n");
         }
 
         try (PrintStream printStream = new PrintStream(new FileOutputStream(outputFile.toFile(), true)))
@@ -120,5 +122,15 @@ public class ClientLoadGenerator
     private static double toMicros(double nanos)
     {
         return nanos / 1000;
+    }
+
+    private static long toMillis(long nanos)
+    {
+        return nanos / (1000 * 1000);
+    }
+
+    private static double toMillis(double nanos)
+    {
+        return nanos / (1000 * 1000);
     }
 }
